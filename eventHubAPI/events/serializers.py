@@ -27,4 +27,13 @@ class EventSerializer(serializers.ModelSerializer):
             })
 
         if ticket_price is not None and ticket_price < 0:
-            raise se 
+            raise serializers.ValidationError({
+                "ticket_price": "Ticket price cannot be negative"
+            }) 
+
+        if total_tickets is not None and total_tickets < 1:
+            raise serializers.ValidationError({
+                "total_tickets": "At least one ticket is required."
+            })
+
+        return attrs
