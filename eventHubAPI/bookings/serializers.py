@@ -3,7 +3,7 @@ from rest_framework import serializers
 from django.utils import timezone
 from .models import Booking
 
-class BooklingSerializer(serializers.ModelSerializer):
+class BookingSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source="user.username")
     event_title = serializers.ReadOnlyField(source="event.title")
 
