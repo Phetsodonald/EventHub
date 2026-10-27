@@ -9,7 +9,7 @@ class Event(models.Model):
 
     title = models.CharField(max_length=200)
     description = models.TextField()
-    vanue = models.CharField(max_length=255)
+    venue = models.CharField(max_length=255)
     starts_at = models.DateTimeField(db_index=True)
     end_at = models.DateTimeField()
     ticket_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -17,7 +17,7 @@ class Event(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT, db_index=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="created_events")
     created_at = models.DateTimeField(auto_now_add=True)
-    update_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["starts_at"]
