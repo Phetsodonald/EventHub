@@ -1,5 +1,6 @@
 from django.db import models
-from  django.conf import settings
+from django.conf import settings
+
 
 class Event(models.Model):
     class Status(models.TextChoices):
@@ -14,8 +15,14 @@ class Event(models.Model):
     end_at = models.DateTimeField()
     ticket_price = models.DecimalField(max_digits=10, decimal_places=2)
     total_tickets = models.PositiveIntegerField()
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.DRAFT, db_index=True)
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="created_events")
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.DRAFT, db_index=True
+    )
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="created_events",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

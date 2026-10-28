@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from django.utils import timezone
 
@@ -6,9 +5,7 @@ from .models import Event
 
 
 class EventSerializer(serializers.ModelSerializer):
-    created_by = serializers.ReadOnlyField(
-        source="created_by.username"
-    )
+    created_by = serializers.ReadOnlyField(source="created_by.username")
 
     class Meta:
         model = Event
@@ -51,23 +48,23 @@ class EventSerializer(serializers.ModelSerializer):
         )
 
         if starts_at and end_at and end_at <= starts_at:
-            raise serializers.ValidationError({
-                "end_at": "The end time must be after the start time."
-            })
+            raise serializers.ValidationError(
+                {"end_at": "The end time must be after the start time."}
+            )
 
         if starts_at and starts_at <= timezone.now():
-            raise serializers.ValidationError({
-                "starts_at": "The event must start in the future."
-            })
+            raise serializers.ValidationError(
+                {"starts_at": "The event must start in the future."}
+            )
 
         if ticket_price is not None and ticket_price < 0:
-            raise serializers.ValidationError({
-                "ticket_price": "Ticket price cannot be negative."
-            })
+            raise serializers.ValidationError(
+                {"ticket_price": "Ticket price cannot be negative."}
+            )
 
         if total_tickets is not None and total_tickets < 1:
-            raise serializers.ValidationError({
-                "total_tickets": "At least one ticket is required."
-            })
+            raise serializers.ValidationError(
+                {"total_tickets": "At least one ticket is required."}
+            )
 
         return attrs

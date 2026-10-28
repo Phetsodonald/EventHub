@@ -1,4 +1,3 @@
-
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -10,9 +9,7 @@ from .serializers import EventSerializer
 
 
 def is_admin_role(user):
-    return user.is_authenticated and (
-        user.is_staff or user.role == "ADMIN"
-    )
+    return user.is_authenticated and (user.is_staff or user.role == "ADMIN")
 
 
 @api_view(["GET", "POST"])
@@ -22,9 +19,9 @@ def event_list_create(request):
         if request.user.is_authenticated and is_admin_role(request.user):
             events = Event.objects.select_related("created_by").all()
         else:
-            events = Event.objects.filter(
-                status=Event.Status.PUBLISHED
-            ).select_related("created_by")
+            events = Event.objects.filter(status=Event.Status.PUBLISHED).select_related(
+                "created_by"
+            )
 
         serializer = EventSerializer(events, many=True)
         return Response(serializer.data)
@@ -61,9 +58,9 @@ def event_detail(request, pk):
         if request.user.is_authenticated and is_admin_role(request.user):
             events = Event.objects.select_related("created_by")
         else:
-            events = Event.objects.filter(
-                status=Event.Status.PUBLISHED
-            ).select_related("created_by")
+            events = Event.objects.filter(status=Event.Status.PUBLISHED).select_related(
+                "created_by"
+            )
 
         event = events.filter(pk=pk).first()
 

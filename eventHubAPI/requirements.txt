@@ -1,9 +1,14 @@
 asgiref==3.12.1
+coverage==7.17.0
 Django==6.1.2
 django-environ==0.14.0
 djangorestframework==3.18.3
 djangorestframework_simplejwt==5.5.1
-psycopg[binary]==3.3.6
+flake8==7.4.1
+mccabe==0.7.0
+psycopg==3.3.6
+pycodestyle==2.15.0
+pyflakes==4.0.3
 PyJWT==2.15.1
 sqlparse==0.6.0
 typing_extensions==4.16.0

@@ -1,4 +1,3 @@
-
 from datetime import timedelta
 from decimal import Decimal
 
@@ -52,12 +51,8 @@ class EventViewsTests(APITestCase):
             "title": "Django Workshop",
             "description": "Learn Django REST Framework.",
             "venue": "Pretoria",
-            "starts_at": (
-                timezone.now() + timedelta(days=14)
-            ).isoformat(),
-            "end_at": (
-                timezone.now() + timedelta(days=14, hours=2)
-            ).isoformat(),
+            "starts_at": (timezone.now() + timedelta(days=14)).isoformat(),
+            "end_at": (timezone.now() + timedelta(days=14, hours=2)).isoformat(),
             "ticket_price": "200.00",
             "total_tickets": 50,
             "status": Event.Status.PUBLISHED,
@@ -69,7 +64,7 @@ class EventViewsTests(APITestCase):
         Event.objects.create(
             title="Draft Event",
             description="Not public.",
-            venue ="Pretoria",
+            venue="Pretoria",
             starts_at=timezone.now() + timedelta(days=10),
             end_at=timezone.now() + timedelta(days=10, hours=2),
             ticket_price=Decimal("100.00"),
@@ -113,7 +108,7 @@ class EventViewsTests(APITestCase):
         draft = Event.objects.create(
             title="Draft Event",
             description="Private event.",
-            venue ="Pretoria",
+            venue="Pretoria",
             starts_at=timezone.now() + timedelta(days=10),
             end_at=timezone.now() + timedelta(days=10, hours=2),
             ticket_price=Decimal("100.00"),
@@ -144,9 +139,7 @@ class EventViewsTests(APITestCase):
             response.status_code,
             status.HTTP_201_CREATED,
         )
-        self.assertTrue(
-            Event.objects.filter(title="Django Workshop").exists()
-        )
+        self.assertTrue(Event.objects.filter(title="Django Workshop").exists())
 
         created_event = Event.objects.get(title="Django Workshop")
         self.assertEqual(created_event.created_by, self.admin)
@@ -219,9 +212,7 @@ class EventViewsTests(APITestCase):
             response.status_code,
             status.HTTP_204_NO_CONTENT,
         )
-        self.assertFalse(
-            Event.objects.filter(pk=self.event.id).exists()
-        )
+        self.assertFalse(Event.objects.filter(pk=self.event.id).exists())
 
     def test_customer_cannot_delete_event(self):
         self.client.force_authenticate(user=self.customer)
@@ -232,9 +223,7 @@ class EventViewsTests(APITestCase):
             response.status_code,
             status.HTTP_403_FORBIDDEN,
         )
-        self.assertTrue(
-            Event.objects.filter(pk=self.event.id).exists()
-        )
+        self.assertTrue(Event.objects.filter(pk=self.event.id).exists())
 
     # Validation
 
@@ -243,9 +232,7 @@ class EventViewsTests(APITestCase):
 
         invalid_data = {
             **self.valid_data,
-            "starts_at": (
-                timezone.now() - timedelta(days=1)
-            ).isoformat(),
+            "starts_at": (timezone.now() - timedelta(days=1)).isoformat(),
         }
 
         response = self.client.post(
@@ -265,9 +252,7 @@ class EventViewsTests(APITestCase):
 
         invalid_data = {
             **self.valid_data,
-            "end_at": (
-                timezone.now() + timedelta(days=13)
-            ).isoformat(),
+            "end_at": (timezone.now() + timedelta(days=13)).isoformat(),
         }
 
         response = self.client.post(

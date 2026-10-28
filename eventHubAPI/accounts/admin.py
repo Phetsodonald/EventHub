@@ -1,4 +1,3 @@
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from .models import User
@@ -6,9 +5,7 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    fieldsets = UserAdmin.fieldsets + (
-        ("EventHub Details", {"fields": ("role",)}),
-    )
+    fieldsets = UserAdmin.fieldsets + (("EventHub Details", {"fields": ("role",)}),)
     add_fieldsets = UserAdmin.add_fieldsets + (
         ("EventHub Details", {"fields": ("role",)}),
     )

@@ -1,4 +1,3 @@
-
 from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
@@ -18,9 +17,7 @@ from .serializers import BookingSerializer
 @permission_classes([IsAuthenticated])
 def booking_list_create(request):
     if request.method == "GET":
-        bookings = Booking.objects.filter(
-            user=request.user
-        ).select_related("event")
+        bookings = Booking.objects.filter(user=request.user).select_related("event")
 
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data)
@@ -41,28 +38,25 @@ def booking_list_create(request):
             )
 
         if event.status != Event.Status.PUBLISHED:
-            raise ValidationError({
-                "event": "This event is not available for booking."
-            })
+            raise ValidationError({"event": "This event is not available for booking."})
 
         if event.starts_at <= timezone.now():
-            raise ValidationError({
-                "event": "This event has already started."
-            })
+            raise ValidationError({"event": "This event has already started."})
 
-        confirmed_tickets = Booking.objects.filter(
-            event=event,
-            status=Booking.Status.CONFIRMED,
-        ).aggregate(total=Sum("quantity"))["total"] or 0
+        confirmed_tickets = (
+            Booking.objects.filter(
+                event=event,
+                status=Booking.Status.CONFIRMED,
+            ).aggregate(total=Sum("quantity"))["total"]
+            or 0
+        )
 
         available_tickets = event.total_tickets - confirmed_tickets
 
         if quantity > available_tickets:
-            raise ValidationError({
-                "quantity": (
-                    f"Only {available_tickets} tickets are available."
-                )
-            })
+            raise ValidationError(
+                {"quantity": (f"Only {available_tickets} tickets are available.")}
+            )
 
         booking = serializer.save(user=request.user)
 
@@ -75,10 +69,14 @@ def booking_list_create(request):
 @api_view(["GET", "PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def booking_detail(request, pk):
-    booking = Booking.objects.filter(
-        pk=pk,
-        user=request.user,
-    ).select_related("event").first()
+    booking = (
+        Booking.objects.filter(
+            pk=pk,
+            user=request.user,
+        )
+        .select_related("event")
+        .first()
+    )
 
     if booking is None:
         return Response(
@@ -92,8 +90,11 @@ def booking_detail(request, pk):
     if request.method == "PATCH":
         allowed_fields = {"quantity"}
         if set(request.data.keys()) - allowed_fields:
-            raise ValidationError(
-                "Only the quantity can be updated. Use cancellation to cancel a booking."
+            raise ValidationError((
+                "Only the quantity can be updated."
+                "Use cancellation to cancel a booking."
+                )
+
             )
 
         serializer = BookingSerializer(
@@ -103,19 +104,18 @@ def booking_detail(request, pk):
         )
         serializer.is_valid(raise_exception=True)
 
-        new_quantity = serializer.validated_data.get(
-            "quantity", booking.quantity
-        )
+        new_quantity = serializer.validated_data.get("quantity", booking.quantity)
 
         with transaction.atomic():
-            event = Event.objects.select_for_update().get(
-                pk=booking.event_id
-            )
+            event = Event.objects.select_for_update().get(pk=booking.event_id)
 
-            confirmed_tickets = Booking.objects.filter(
-                event=event,
-                status=Booking.Status.CONFIRMED,
-            ).aggregate(total=Sum("quantity"))["total"] or 0
+            confirmed_tickets = (
+                Booking.objects.filter(
+                    event=event,
+                    status=Booking.Status.CONFIRMED,
+                ).aggregate(total=Sum("quantity"))["total"]
+                or 0
+            )
 
             # Exclude this booking from the count when checking its new quantity.
             available_without_this = (
@@ -123,12 +123,14 @@ def booking_detail(request, pk):
             )
 
             if new_quantity > available_without_this:
-                raise ValidationError({
-                    "quantity": (
-                        f"Only {available_without_this} tickets are available "
-                        "for this booking."
-                    )
-                })
+                raise ValidationError(
+                    {
+                        "quantity": (
+                            f"Only {available_without_this} tickets are available "
+                            "for this booking."
+                        )
+                    }
+                )
 
             serializer.save()
 

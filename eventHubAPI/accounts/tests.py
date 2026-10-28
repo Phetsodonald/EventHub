@@ -1,4 +1,3 @@
-
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 
@@ -112,9 +111,7 @@ class RegisterUserTests(APITestCase):
         )
         self.assertIn("password", response.data)
 
-        self.assertFalse(
-            User.objects.filter(username="testuser").exists()
-        )
+        self.assertFalse(User.objects.filter(username="testuser").exists())
 
     def test_register_rejects_missing_username(self):
         invalid_data = {
@@ -151,4 +148,3 @@ class RegisterUserTests(APITestCase):
             status.HTTP_400_BAD_REQUEST,
         )
         self.assertIn("password", response.data)
-
